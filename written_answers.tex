@@ -6,48 +6,54 @@
 \usepackage{graphicx}
 \usepackage{hyperref}
 
-\title{S2 Major Module Coursework: Coal Mining Accident Analysis}
-\author{Your Name --- Candidate Number: [Your ID]}
-\date{Lent Term 2026}
+\graphicspath{ {./figs/} }
+
+\title{S2 Coursework: Coal Mining Accident Analysis}
+\author{Fred Lawrence - fl482}
 
 \begin{document}
 
 \maketitle
 
-\section*{Declaration of AI Use}
-% Requirement: Include a declaration of use of autogeneration tools[cite: 16, 17].
-I declare that I have used [Name of Tool] to assist with [e.g., LaTeX formatting / code debugging]. This declaration is made in accordance with the Course Handbook[cite: 16].
-
 \section*{1. Accident Data}
-% Question: Mean rate and cumulative plot[cite: 41, 42].
-The total number of accidents recorded is $N=191$ over a period of $L=40550$ days[cite: 22]. The mean rate of accidents is approximately:
+% Question: Mean rate and cumulative plot
+The total number of accidents recorded is $N=191$ over a period of $L=40550$ days. The mean rate of accidents is $0.00471$ accidents/day
+or $1.72$ accidents/year.
 \[ \bar{\lambda} = \frac{N}{L} \approx 0.0047 \text{ accidents/day.} \]
 
-[Insert Figure 1: Cumulative number of accidents over time here]
+\begin{figure}[htbp]
+    \centering
+    \includegraphics[width=0.8\textwidth]{Ex1a.pdf}
+    \caption{Cumulative number of coal mining accidents from 1851 to 1962.}
+    \label{fig:1a}
+\end{figure}
 
 \section*{2. Priors}
 \subsection*{(a) Qualitative Comparison}
-% Limit: Under 200 words[cite: 52].
+% Limit: Under 200 words.
 % Word count check: 0 words.
-[Your 200-word comparison between plain order statistics and even-numbered order statistics goes here.]
 
 \subsection*{(b) PDF Derivation}
-% Requirement: Show the PDF of the even-numbered order statistics[cite: 54].
+% Requirement: Show the PDF of the even-numbered order statistics.
 The PDF of the even-numbered order statistics is given by:
 \[ \pi(s_{1},s_{2},...,s_{k}|M_{k}) = \frac{1}{L^{2k+1}B(\alpha)}\prod_{j=1}^{k+1}g_{j} \]
-where $g_j$ are the gaps between change points[cite: 63].
+where $g_j$ are the gaps between change points.
 
 \section*{3. The constant rate model, $M_0$}
-% Requirement: Prior vs Posterior plot and evidence calculation[cite: 74].
+% Requirement: Prior vs Posterior plot and evidence calculation.
 
 \section*{4. The 1 change point model, $M_1$}
 \subsection*{(a) MCMC Analysis}
-% Limit: Under 300 words[cite: 79].
+% Limit: Under 300 words.
 
 \subsection*{(b) Savage Dickey Density Ratio}
-% Limit: Under 200 words[cite: 80].
+% Limit: Under 200 words.
 
 \section*{5. The k change point models, $M_k$}
-% Requirement: MAP number of change points and inferred rate with uncertainties[cite: 95, 96].
+% Requirement: MAP number of change points and inferred rate with uncertainties.
+
+\section*{Declaration of AI Use}
+% Requirement: Include a declaration of use of autogeneration tools.
+I have used autogeneration tools to assist with code debugging, LaTeX formatting and helping to generate figures. This declaration is made in accordance with the Course Handbook.
 
 \end{document}

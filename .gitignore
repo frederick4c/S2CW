@@ -3,3 +3,20 @@ S2CWvenv/
 
 # notes
 *.md
+
+# LaTeX auxiliary files
+*.aux
+*.log
+*.out
+*.toc
+*.synctex.gz
+*.fls
+*.fdb_latexmk
+
+# Python cache
+__pycache__/
+*.pyc
+
+# Build directories
+build/
+out/
