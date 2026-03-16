@@ -48,9 +48,45 @@ The even-numbered prior is constructed by drawing $2k + 1$ points uniformly, sor
 
 \subsection*{(b) PDF Derivation}
 % Requirement: Show the PDF of the even-numbered order statistics.
-The PDF of the even-numbered order statistics is given by:
-\[ \pi(s_{1},s_{2},...,s_{k}|M_{k}) = \frac{1}{L^{2k+1}B(\alpha)}\prod_{j=1}^{k+1}g_{j} \]
-where $g_j$ are the gaps between change points.
+To derive the even-numbered pdf we start with the fact that the plain ordered pdf for $2k+1$ points on the unit interval $[0, 1]$ is a constant
+
+$$P(u_{(1)}, u_{(2)}, \dots, u_{(2k+1)}) = (2k + 1)!$$
+
+This is valid only on the strictly ordered region $0 < u_{(1)} < u_{(2)} < \dots < u_{(2k+1)} < 1$.
+
+For the even numbered pdf we only keep even-numbered order statistics $\hat{s}_j = u_{(2j)}$ so must marginalise the plain order pdf over all the other discarded points. We know that the points are ordered and on the unit interval $[0, 1]$ so the integral is
+
+$$P(\hat{s}_1, \dots, \hat{s}_k) = \int_{0}^{\hat{s}_1} \int_{\hat{s}_1}^{\hat{s}_2} \dots \int_{\hat{s}_k}^{1} (2k + 1)! \, du_{(2k+1)} \dots du_{(3)} du_{(1)}$$
+
+Because the integrand $(2k+1)!$ is a constant, each integral becomes the length of the interval between the 2 points on the bounds, or the gap $\hat{g}_j$ between them.
+
+$$P(\hat{s}_1, \dots, \hat{s}_k) = (2k + 1)! (\hat{s}_1)(\hat{s}_2 - \hat{s}_1)\dots(1 - \hat{s}_k)$$
+
+$$=  (2k + 1)! \prod_{j=1}^{k+1} \hat{g}_j$$
+
+We now need to map this from the unit interval $[0, 1]$ to the actual timeline $[0, L]$. We are given the scaling relationship $s_j = L\hat{s}_j$ so can scale the gaps according to $\hat{g}_j = g_j / L$ and substitute this into the equation
+
+$$P(\hat{s}_1, \dots, \hat{s}_k) = (2k + 1)! \prod_{j=1}^{k+1} \left( \frac{g_j}{L} \right)$$
+
+Since $L$ is a constant it can be pulled out of the product
+
+$$P(\hat{s}_1, \dots, \hat{s}_k) = \frac{(2k + 1)!}{L^{k+1}} \prod_{j=1}^{k+1} \left( g_j \right)$$
+
+We must then apply the change of variables formula 
+
+$$P(s_1, \dots, s_k) = P(\hat{s}_1, \dots, \hat{s}_k) \times \left| J \right|$$
+
+where $|J|$ is the Jacobian determinant of the transformation. 
+
+Since $s_j = L \hat{s}_j$, the inverse transformation is $\hat{s}_j = \frac{s_j}{L}$. Taking the derivative of each variable gives $\frac{\partial \hat{s}_j}{\partial s_j} = \frac{1}{L}$. The Jacobian determinant is then given by the product of the derivatives and since there are $k$ points,
+
+$$\left| J \right| = \left( \frac{1}{L} \right)^k = \frac{1}{L^k}$$
+
+This allows us to obtain the final pdf
+
+$$\pi(s_1, s_2, \dots, s_k | M_k) = \frac{(2k+1)!}{L^{2k+1}} \prod_{j=1}^{k+1} g_j$$
+
+$$\pi(s_1, s_2, \dots, s_k | M_k) \propto \prod_{j=1}^{k+1} g_j$$
 
 \section*{3. The constant rate model, $M_0$}
 % Requirement: Prior vs Posterior plot and evidence calculation.
