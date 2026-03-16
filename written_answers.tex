@@ -4,7 +4,9 @@
 \geometry{a4paper, margin=1in}
 \usepackage{amsmath, amssymb, amsthm}
 \usepackage{graphicx}
-\usepackage{hyperref}
+\usepackage[hidelinks]{hyperref}
+\usepackage[nameinlink]{cleveref}
+\usepackage{parskip}
 
 \graphicspath{ {./figs/} }
 
@@ -31,7 +33,18 @@ or $1.72$ accidents/year.
 \section*{2. Priors}
 \subsection*{(a) Qualitative Comparison}
 % Limit: Under 200 words.
-% Word count check: 0 words.
+The plain order statistics prior involves drawing $k$ change points from a uniform distribution over the interval $[0, L]$ and then sorting them. This means that the points are independent before sorting and can be clustered tightly together. As shown in \Cref{fig:2a}, the marginal distributions are broad and can peak directly at the boundaries.
+
+The even-numbered prior is constructed by drawing $2k + 1$ points uniformly, sorting them, and then taking the evenly indexed points. This results in a repulsive effect between points, encouraging more evenly spaced change points. It also has the effect of preventing peaks at the boundaries as the first and last points are always odd and therefore always excluded. In \Cref{fig:2a} we can also see that the marginal distributions are more distinctly separated and narrower than those of the plain order priors.
+% Word count check: 115 words.
+
+\begin{figure}[htbp]
+    \centering
+    \includegraphics[width=0.8\textwidth]{Ex2a.pdf}
+    \caption{Comparison of plain and even-numbered order statistics priors for $k=4$ accross different values of $j$. Plain order priors are shown with a dashed line and even numbered priors with a solid line.}
+    \label{fig:2a}
+\end{figure}
+
 
 \subsection*{(b) PDF Derivation}
 % Requirement: Show the PDF of the even-numbered order statistics.
