@@ -132,6 +132,25 @@ The prior and posterior distributions are plotted in \Cref{fig:3a}.
 \section*{4. The 1 change point model, $M_1$}
 \subsection*{(a) MCMC Analysis}
 % Briefly explain (in under 300 words) which algorithm/package you used for the MCMC, any important settings for this algorithm, and any diagnostic checks you performed to check for convergence.
+For the MCMC analysis, we use the \texttt{emcee} package which implements an affine invariant ensemble sampler. It works by creating an ensemble of multiple walkers that propose their next moves based on the position of the other walkers in the ensemble. This makes them invariant to the scale of the parameters, which is important given that $s_1$ is in the order of $10^4$ and $h_0$,$h_1$ are in the order of $10^{-3}$.
+
+There are 3 dimensions to search over $[s_1, h_0, h_1]$ so 32 walkers were used to ensure full coverage. From the trace plots in \Cref{fig:4a_traces} we can see that the burn-in period for the chains was very short and that the set value of 500 steps was sufficient to allow the chains to converge. This fast convergence is likely due to the fact that the walkers were initialised at values close to the peaks for each parameter, chosen from the results of $M_0$. The trace plots each remain stable within a flat, horizontal band suggesting that they reached a stationary distribution. The autocorrelation times ($\tau$) for the chains were calculated to be $\tau \approx 47$ meaning that the 8000 steps were easily enough to obtain a large number of independent samples. The chains were not thinned as the sample size is too small to be concerned with memory usage. The Gelman-Rubin statistic was not calculated as the walkers look at other walkers to determine their next step, meaning they are inherently not independent.
+
+The corner plot in \Cref{fig:4a_corner} shows that the $s_1$ parameter has 3 peaks and that a single change point may not accurately describe the data. 
+
+\begin{figure}[htbp]
+    \centering
+    \includegraphics[width=0.8\textwidth]{Ex4a_traces.pdf}
+    \caption{Trace plots from the ensemble MCMC sampler for $M_1$.}
+    \label{fig:4a_traces}
+\end{figure}
+
+\begin{figure}[htbp]
+    \centering
+    \includegraphics[width=0.8\textwidth]{Ex4a_corner.pdf}
+    \caption{TODO}
+    \label{fig:4a_corner}
+\end{figure}
 
 \subsection*{(b) Savage Dickey Density Ratio}
 % Limit: Under 200 words.
