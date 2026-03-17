@@ -118,7 +118,7 @@ $$P^*(h_0) = \exp(C) \times \exp(f(h_0) - C)$$
 $$Z_0 = \exp(C) \int_{0}^{\infty} \exp(f(h_0) - C) \, dh_0$$
 
 We can now use numerical integration with \texttt{scipy.integrate.quad} to evaluate the integral
-$$\log Z_0 = C + \log\left( \int_{0}^{\infty} \exp(f(h_0) - C) \, dh_0 \right) = -1217.09$$
+$$\log Z_0 = C + \log\left( \int_{0}^{\infty} \exp(f(h_0) - C) \, dh_0 \right) \approx -1217$$
 
 The prior and posterior distributions are plotted in \Cref{fig:3a}.
 
@@ -137,6 +137,7 @@ For the MCMC analysis, we use the \texttt{emcee} package which implements an aff
 There are 3 dimensions to search over $[s_1, h_0, h_1]$ so 32 walkers were used to ensure full coverage. From the trace plots in \Cref{fig:4a_traces} we can see that the burn-in period for the chains was very short and that the set value of 500 steps was sufficient to allow the chains to converge. This fast convergence is likely due to the fact that the walkers were initialised at values close to the peaks for each parameter, chosen from the results of $M_0$. The trace plots each remain stable within a flat, horizontal band suggesting that they reached a stationary distribution. The autocorrelation times ($\tau$) for the chains were calculated to be $\tau \approx 47$ meaning that the 8000 steps were easily enough to obtain a large number of independent samples. The chains were not thinned as the sample size is too small to be concerned with memory usage. The Gelman-Rubin statistic was not calculated as the walkers look at other walkers to determine their next step, meaning they are inherently not independent.
 
 The corner plot in \Cref{fig:4a_corner} shows that the $s_1$ parameter has 3 peaks and that a single change point may not accurately describe the data. 
+% 269 words
 
 \begin{figure}[htbp]
     \centering
@@ -153,12 +154,25 @@ The corner plot in \Cref{fig:4a_corner} shows that the $s_1$ parameter has 3 pea
 \end{figure}
 
 \subsection*{(b) Savage Dickey Density Ratio}
-% Limit: Under 200 words.
+% Explain briefly (in under 200 words) how the Savage Dickey density ratio can, in principle, be used to find the ratio of evidences between the models 𝑀1 and 𝑀0.
+% Also explain what difficulty is encountered when trying to use the Savage Dickey density ratio in this example. include plot
+
+\subsection*{(c) Laplace Approximation}
+% Explain briefly (in under 200 words) how the Laplace Approximation can, in principle, be used to find the ratio of evidences between the models 𝑀1 and 𝑀0.
+% Also explain what difficulty is encountered when trying to use the Laplace Approximation in this example. include plot
+
+\subsection*{(d) Nested Sampling}
+% Describe briefly (in under 200 words) the details of the algorithm and any relevant settings used.
 
 \section*{5. The k change point models, $M_k$}
-% Requirement: MAP number of change points and inferred rate with uncertainties.
+\subsection*{(b) MAP Change Points}
+% Plot the trace plot for the model index 𝑘 to verify that the chain has fully explored the model space. Plot the posterior on the model index 𝑘.
+% What is the preferred maximum a posteriori number of change points?
 
-\section*{Declaration of AI Use}
+\subsection*{(c) Model Averaging}
+% Briefly explain (in under 250 words) how you calculated the uncertainty regions
+
+\section*{AI Use}
 % Requirement: Include a declaration of use of autogeneration tools.
 I have used autogeneration tools to assist with code debugging, LaTeX formatting and helping to generate figures. This declaration is made in accordance with the Course Handbook.
 
