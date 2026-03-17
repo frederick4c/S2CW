@@ -174,8 +174,15 @@ The problem arises in this example when trying to evaluate the posterior density
 \end{figure}
 
 \subsection*{(c) Laplace Approximation}
-% Explain briefly (in under 200 words) how the Laplace Approximation can, in principle, be used to find the ratio of evidences between the models 𝑀1 and 𝑀0.
-% Also explain what difficulty is encountered when trying to use the Laplace Approximation in this example. include plot
+% Explain briefly (in under 200 words) what difficulty is encountered if one tried to use the Laplace approximation to estimate the evidence 𝑍1 ≡ 𝑃({𝐼𝑖}|𝑀1) for the model 𝑀1
+The Laplace approximation is a semi analytic technique for calculating the evidence which approximates the posterior as a Gaussian around its peak. For $M_1$ there are two issues that prevent us from using this approximation effectively.
+$$\log Z \approx \log P(D | \theta_{MAP}, M) + \log \pi(\theta_{MAP} | M) + \frac{d}{2} \log(2\pi) - \frac{1}{2} \log |H|$$
+
+The main issue is that the Laplace approximation requires the data to be smooth as it calculates the Hessian matrix $H$. As we move along $s_1$, the likelihood is completely flat until a day where an accident occurs, at which point it discontinuously jumps. This will result in an undefined derivative at data points and 0 everywhere else. The determinant of the Hessian $|H|$ will therefore equal 0 and the $-\frac{1}{2} \log(0)$ term will tend to infinity.
+
+The second issue is that the posterior is multimodal, as can be seen in \Cref{fig:4a_corner} where the marginal posterior for $s_1$ has 3 distinct peaks. Fitting a single Gaussian around the main peak would ignore an insignificant proportion of the distribution, leading to an underestimation even if the Hessian was well defined.
+
+
 
 \subsection*{(d) Nested Sampling}
 % Describe briefly (in under 200 words) the details of the algorithm and any relevant settings used.
