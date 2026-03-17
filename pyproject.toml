@@ -1,0 +1,12 @@
+[project]
+name = "s2cw"
+version = "0.1.0"
+description = "S2 Coursework project"
+dependencies = [
+    "numpy",
+    "scipy",
+    "tqdm",
+    "matplotlib",
+    "emcee",
+    "corner",
+]

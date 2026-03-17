@@ -1,0 +1,179 @@
+\documentclass[11pt]{article}
+\usepackage[utf8]{inputenc}
+\usepackage{geometry}
+\geometry{a4paper, margin=1in}
+\usepackage{amsmath, amssymb, amsthm}
+\usepackage{graphicx}
+\usepackage[hidelinks]{hyperref}
+\usepackage[nameinlink]{cleveref}
+\usepackage{parskip}
+\usepackage{listings}
+
+\graphicspath{ {./figs/} }
+
+\title{S2 Coursework: Coal Mining Accident Analysis}
+\author{Fred Lawrence - fl482}
+
+\begin{document}
+
+\maketitle
+
+\section*{1. Accident Data}
+% Question: Mean rate and cumulative plot
+The total number of accidents recorded is $N=191$ over a period of $L=40550$ days. The mean rate of accidents is $0.00471$ accidents/day
+or $1.72$ accidents/year.
+\[ \bar{\lambda} = \frac{N}{L} \approx 0.0047 \text{ accidents/day.} \]
+
+\begin{figure}[htbp]
+    \centering
+    \includegraphics[width=0.8\textwidth]{Ex1a.pdf}
+    \caption{Cumulative number of coal mining accidents from 1851 to 1962.}
+    \label{fig:1a}
+\end{figure}
+
+\section*{2. Priors}
+\subsection*{(a) Qualitative Comparison}
+% Limit: Under 200 words.
+The plain order statistics prior involves drawing $k$ change points from a uniform distribution over the interval $[0, L]$ and then sorting them. This means that the points are independent before sorting and can be clustered tightly together. As shown in \Cref{fig:2a}, the marginal distributions are broad and can peak directly at the boundaries.
+
+The even-numbered prior is constructed by drawing $2k + 1$ points uniformly, sorting them, and then taking the evenly indexed points. This results in a repulsive effect between points, encouraging more evenly spaced change points. It also has the effect of preventing peaks at the boundaries, which makes sense for a change point, as the first and last points are always odd and therefore always excluded. In \Cref{fig:2a} we can also see that the marginal distributions are more distinctly separated and narrower than those of the plain order priors.
+% Word count check: 115 words.
+
+\begin{figure}[htbp]
+    \centering
+    \includegraphics[width=0.8\textwidth]{Ex2a.pdf}
+    \caption{Comparison of plain and even-numbered order statistics priors for $k=4$ accross different values of $j$. Plain order priors are shown with a dashed line and even numbered priors with a solid line.}
+    \label{fig:2a}
+\end{figure}
+
+
+\subsection*{(b) PDF Derivation}
+% Requirement: Show the PDF of the even-numbered order statistics.
+To derive the even-numbered pdf we start with the fact that the plain ordered pdf for $2k+1$ points on the unit interval $[0, 1]$ is a constant
+$$P(u_{(1)}, u_{(2)}, \dots, u_{(2k+1)}) = (2k + 1)!$$
+
+This is valid only on the strictly ordered region $0 < u_{(1)} < u_{(2)} < \dots < u_{(2k+1)} < 1$.
+
+For the even numbered pdf we only keep even-numbered order statistics $\hat{s}_j = u_{(2j)}$ so must marginalise the plain order pdf over all the other discarded points. We know that the points are ordered and on the unit interval $[0, 1]$ so the integral is
+$$P(\hat{s}_1, \dots, \hat{s}_k) = \int_{0}^{\hat{s}_1} \int_{\hat{s}_1}^{\hat{s}_2} \dots \int_{\hat{s}_k}^{1} (2k + 1)! \, du_{(2k+1)} \dots du_{(3)} du_{(1)}$$
+
+Because the integrand $(2k+1)!$ is a constant, each integral becomes the length of the interval between the 2 points on the bounds, or the gap $\hat{g}_j$ between them.
+$$P(\hat{s}_1, \dots, \hat{s}_k) = (2k + 1)! (\hat{s}_1)(\hat{s}_2 - \hat{s}_1)\dots(1 - \hat{s}_k)$$
+
+$$=  (2k + 1)! \prod_{j=1}^{k+1} \hat{g}_j$$
+
+We now need to map this from the unit interval $[0, 1]$ to the actual timeline $[0, L]$. We are given the scaling relationship $s_j = L\hat{s}_j$ so can scale the gaps according to $\hat{g}_j = g_j / L$ and substitute this into the equation
+$$P(\hat{s}_1, \dots, \hat{s}_k) = (2k + 1)! \prod_{j=1}^{k+1} \left( \frac{g_j}{L} \right)$$
+
+Since $L$ is a constant it can be pulled out of the product
+$$P(\hat{s}_1, \dots, \hat{s}_k) = \frac{(2k + 1)!}{L^{k+1}} \prod_{j=1}^{k+1} \left( g_j \right)$$
+
+We must then apply the change of variables formula 
+$$P(s_1, \dots, s_k) = P(\hat{s}_1, \dots, \hat{s}_k) \times \left| J \right|$$
+
+where $|J|$ is the Jacobian determinant of the transformation. 
+
+Since $s_j = L \hat{s}_j$, the inverse transformation is $\hat{s}_j = \frac{s_j}{L}$. Taking the derivative of each variable gives $\frac{\partial \hat{s}_j}{\partial s_j} = \frac{1}{L}$. The Jacobian determinant is then given by the product of the derivatives and since there are $k$ points,
+$$\left| J \right| = \left( \frac{1}{L} \right)^k = \frac{1}{L^k}$$
+
+This allows us to obtain the final pdf
+$$\pi(s_1, s_2, \dots, s_k | M_k) = \frac{(2k+1)!}{L^{2k+1}} \prod_{j=1}^{k+1} g_j$$
+
+$$\pi(s_1, s_2, \dots, s_k | M_k) \propto \prod_{j=1}^{k+1} g_j$$
+
+\section*{3. The constant rate model, $M_0$}
+% Requirement: Prior vs Posterior plot and evidence calculation.
+From the instructions we know that the log likelihood is given by 
+$$\log \mathcal{L}(\{I_i\} | \{s_j\}, \{h_j\}, M_k) = \sum_{i=1}^{N} \log h_0 - \int_{0}^{L} dt \, x(t)$$
+
+Since $x(t) = h_0$ is a constant over the interval $L$ 
+$$\log \mathcal{L}(\{I_i\} | h_0, M_0) = N \log(h_0) - h_0 L$$ 
+
+The likelihood is therefore 
+$$\mathcal{L}(\{I_i\} | h_0, M_0) = h_0^N \exp(-h_0 L)$$
+
+From Exercise 2, the prior for the height parameters is universally given by a Gamma distribution $h_0 \sim \Gamma(\alpha, \beta)$ where $\alpha=1$ and $\beta=200$. This forms the probability density function
+$$ \pi(h_0|M_0) = \frac{\beta^\alpha}{\Gamma(\alpha)} h_0^{\alpha-1} \exp(-\beta h_0) $$ 
+
+Since $\alpha=1$ and $\Gamma(1) = 1$, the prior simplifies to 
+$$ \pi(h_0|M_0) = \beta \exp(-\beta h_0) = 200 \exp(-200 h_0) $$
+
+Applying Bayes' rule the unnormalised posterior $P^*$ is the product of the prior and likelihood
+$$ P^*(h_0 | \{I_i\}, M_0) = \beta \cdot h_0^N \exp(-h_0(L + \beta)) $$
+
+To calculate the true evidence $Z_0$ for model $M_0$, we must integrate $P^*(h_0 | \{I_i\}, M_0)$ over all possible values of $h_0$.
+$$Z_0 = \int_{0}^{\infty} P^*(h_0 | \{I_i\}, M_0) \, dh_0$$
+
+When evaluating $P^*(h_0) = \beta \cdot h_0^N \exp(-h_0(L+\beta))$ for our dataset where $N=191$ and $L=40550$, the probabilities evaluate to 0 due to an effect known as floating point underflow.
+
+To safely resolve this underflow, we perform the computation in log-space. First, we take the logarithm of the unnormalised posterior:
+$$f(h_0) = \log(P^*(h_0)) = \log(\beta) + N \log(h_0) - h_0(L + \beta)$$
+
+We can then find the exact maximum of this log-posterior analytically. Taking the derivative with respect to $h_0$ and setting to zero yields the maximum a posteriori (MAP) height:
+$$h_{\text{max}} = \frac{N}{L + \beta} \approx 0.00469$$
+
+By evaluating the maximum log-posterior $C = f(h_{\text{max}})$, we can shift the posterior to peak at 1 and prevent the underflow problem when calculating the evidence.
+$$P^*(h_0) = \exp(C) \times \exp(f(h_0) - C)$$
+
+$$Z_0 = \exp(C) \int_{0}^{\infty} \exp(f(h_0) - C) \, dh_0$$
+
+We can now use numerical integration with \texttt{scipy.integrate.quad} to evaluate the integral
+$$\log Z_0 = C + \log\left( \int_{0}^{\infty} \exp(f(h_0) - C) \, dh_0 \right) \approx -1217$$
+
+The prior and posterior distributions are plotted in \Cref{fig:3a}.
+
+\begin{figure}[htbp]
+    \centering
+    \includegraphics[width=0.8\textwidth]{Ex3a.pdf}
+    \caption{Prior (dashed line) and posterior (solid line) distributions for the constant rate model $M_0$.}
+    \label{fig:3a}
+\end{figure}
+
+\section*{4. The 1 change point model, $M_1$}
+\subsection*{(a) MCMC Analysis}
+% Briefly explain (in under 300 words) which algorithm/package you used for the MCMC, any important settings for this algorithm, and any diagnostic checks you performed to check for convergence.
+For the MCMC analysis, we use the \texttt{emcee} package which implements an affine invariant ensemble sampler. It works by creating an ensemble of multiple walkers that propose their next moves based on the position of the other walkers in the ensemble. This makes them invariant to the scale of the parameters, which is important given that $s_1$ is in the order of $10^4$ and $h_0$,$h_1$ are in the order of $10^{-3}$.
+
+There are 3 dimensions to search over $[s_1, h_0, h_1]$ so 32 walkers were used to ensure full coverage. From the trace plots in \Cref{fig:4a_traces} we can see that the burn-in period for the chains was very short and that the set value of 500 steps was sufficient to allow the chains to converge. This fast convergence is likely due to the fact that the walkers were initialised at values close to the peaks for each parameter, chosen from the results of $M_0$. The trace plots each remain stable within a flat, horizontal band suggesting that they reached a stationary distribution. The autocorrelation times ($\tau$) for the chains were calculated to be $\tau \approx 47$ meaning that the 8000 steps were easily enough to obtain a large number of independent samples. The chains were not thinned as the sample size is too small to be concerned with memory usage. The Gelman-Rubin statistic was not calculated as the walkers look at other walkers to determine their next step, meaning they are inherently not independent.
+
+The corner plot in \Cref{fig:4a_corner} shows that the $s_1$ parameter has 3 peaks and that a single change point may not accurately describe the data. 
+% 269 words
+
+\begin{figure}[htbp]
+    \centering
+    \includegraphics[width=0.8\textwidth]{Ex4a_traces.pdf}
+    \caption{Trace plots from the ensemble MCMC sampler for $M_1$.}
+    \label{fig:4a_traces}
+\end{figure}
+
+\begin{figure}[htbp]
+    \centering
+    \includegraphics[width=0.8\textwidth]{Ex4a_corner.pdf}
+    \caption{TODO}
+    \label{fig:4a_corner}
+\end{figure}
+
+\subsection*{(b) Savage Dickey Density Ratio}
+% Explain briefly (in under 200 words) how the Savage Dickey density ratio can, in principle, be used to find the ratio of evidences between the models 𝑀1 and 𝑀0.
+% Also explain what difficulty is encountered when trying to use the Savage Dickey density ratio in this example. include plot
+
+\subsection*{(c) Laplace Approximation}
+% Explain briefly (in under 200 words) how the Laplace Approximation can, in principle, be used to find the ratio of evidences between the models 𝑀1 and 𝑀0.
+% Also explain what difficulty is encountered when trying to use the Laplace Approximation in this example. include plot
+
+\subsection*{(d) Nested Sampling}
+% Describe briefly (in under 200 words) the details of the algorithm and any relevant settings used.
+
+\section*{5. The k change point models, $M_k$}
+\subsection*{(b) MAP Change Points}
+% Plot the trace plot for the model index 𝑘 to verify that the chain has fully explored the model space. Plot the posterior on the model index 𝑘.
+% What is the preferred maximum a posteriori number of change points?
+
+\subsection*{(c) Model Averaging}
+% Briefly explain (in under 250 words) how you calculated the uncertainty regions
+
+\section*{AI Use}
+% Requirement: Include a declaration of use of autogeneration tools.
+I have used autogeneration tools to assist with code debugging, LaTeX formatting and helping to generate figures. This declaration is made in accordance with the Course Handbook.
+
+\end{document}
