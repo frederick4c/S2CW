@@ -218,7 +218,47 @@ class RJMCMC:
             1 if the move was accepted, 0 otherwise.
         """
         # TO DO: implement height change move
-        raise NotImplementedError("Height change move not implemented yet.")
+        # Extract k, s, and h from the current state
+        k = (len(state) - 1) // 2
+        proposed_state = deepcopy(state)
+        
+        # Pick a random segment j to update its height h_j
+        j = np.random.randint(0, k + 1)
+        
+        # The heights are stored in the state array from index k to 2k
+        h_idx = k + j
+        h_j_old = state[h_idx]
+        
+        # Propose a new height using a random walk in log-space (Green 1995)
+        # ln(h_j_new / h_j_old) ~ U[-0.5, 0.5]
+        u = np.random.uniform(-0.5, 0.5)
+        h_j_new = h_j_old * np.exp(u)
+        
+        proposed_state[h_idx] = h_j_new
+
+        # 1. Log Likelihood Ratio
+        log_like_ratio = self.log_likelihood(proposed_state) - self.log_likelihood(state)
+        
+        # 2. Log Prior Ratio (Gamma distribution for heights)
+        # p(h) \propto h^(alpha - 1) * exp(-beta * h)
+        log_prior_ratio = (self.alpha - 1.0) * (np.log(h_j_new) - np.log(h_j_old)) - \
+                          self.beta * (h_j_new - h_j_old)
+                          
+        # 3. Log Proposal Ratio (Jacobian of the log-transformation)
+        # Since u = ln(h_new) - ln(h_old), the Jacobian dh_new / dh_old is h_new / h_old
+        log_proposal_ratio = np.log(h_j_new / h_j_old)
+
+        # Log acceptance probability
+        log_accept_prob = log_like_ratio + log_prior_ratio + log_proposal_ratio
+
+        # Either accept or reject the proposed move
+        if np.log(np.random.uniform()) < log_accept_prob:
+            accept = 1
+            return proposed_state, accept
+        else:
+            accept = 0
+            return state, accept
+
         
     def position_change_move(self, 
                              state,
@@ -331,11 +371,23 @@ class RJMCMC:
         
         # log prior ratio
         # TO DO: implement log prior ratio term for the birth move
-        log_prior_ratio = 0.0
+        # model prior ratio
+        log_prior_k = np.log(self.lam) - np.log(k + 1.0) # checked 1
+        
+        # change point prior ratio
+        log_prior_s = np.log(2*k + 2) + np.log(2*k + 3) - 2*np.log(self.duration) + np.log(s_jplus1 - s_star) + np.log(s_star - s_j) - np.log(s_jplus1 - s_j)
+        
+        # height prior ratio
+        log_prior_h = self.alpha*np.log(self.beta) - gammaln(self.alpha) + (self.alpha - 1)*(np.log(h_j_prime) + np.log(h_jplus1_prime) - np.log(h_j)) - self.beta*(h_j_prime + h_jplus1_prime - h_j)
+
+        # log prior ratio
+        log_prior_ratio = log_prior_k + log_prior_s + log_prior_h
 
         # log proposal ratio
-        bk = self.c * min(1, self.prior_k.pmf(k+1)/self.prior_k.pmf(k))
-        dkplus1 = self.c * min(1, self.prior_k.pmf(k)/self.prior_k.pmf(k+1)) 
+        bk = self.c * min(1, self.prior_k.pmf(k+1)/self.prior_k.pmf(k)) \
+        if k < self.k_max else 0.0
+        dkplus1 = self.c * min(1, self.prior_k.pmf(k)/self.prior_k.pmf(k+1)) \
+        if k+1 > 0 else 0.0
         log_proposal_ratio = np.log(dkplus1*self.duration) - np.log(bk*(k+1))
 
         # log Jacobian 
@@ -403,15 +455,32 @@ class RJMCMC:
         
         # log prior ratio
         # TO DO: implement log prior ratio term for the death move
-        log_prior_ratio = 0.0
+
+        h_new = np.exp(logh_j_prime)
+        h_old_1 = poisson_rates[j-1]
+        h_old_2 = poisson_rates[j]
+
+        log_prior_k = np.log(k) - np.log(self.lam) 
+        
+        # change point prior ratio
+        log_prior_s = -np.log(2*k) - np.log(2*k + 1) + 2*np.log(self.duration) + np.log(s_jplus1 - s_jminus1) - np.log(s_jplus1 - s_j) - np.log(s_j - s_jminus1)
+        
+        # height prior ratio
+        log_prior_h = self.alpha*np.log(self.beta) - gammaln(self.alpha) + (self.alpha - 1)*(np.log(h_new) - np.log(h_old_1) - np.log(h_old_2)) - self.beta*(h_new - h_old_1 - h_old_2)
+    
+        # log prior ratio
+        log_prior_ratio = log_prior_k + log_prior_s + log_prior_h
 
         # log proposal ratio
-        bkminus1 = self.c * min(1, self.prior_k.pmf(k)/self.prior_k.pmf(k-1)) 
-        dk = self.c * min(1, self.prior_k.pmf(k-1)/self.prior_k.pmf(k)) 
+        bkminus1 = self.c * min(1, self.prior_k.pmf(k)/self.prior_k.pmf(k-1)) \
+        if k-1 < self.k_max else 0.0
+        dk = self.c * min(1, self.prior_k.pmf(k-1)/self.prior_k.pmf(k)) \
+        if k > 0 else 0.0
         log_proposal_ratio = np.log(bkminus1*k) - np.log(dk*self.duration)
 
         # log Jacobian 
-        log_jacobian = logh_j_prime - 2.0 * logsumexp([logh_j,logh_jplus1])
+        # log_jacobian = logh_j_prime - 2.0 * logsumexp([logh_j,logh_jplus1])
+        log_jacobian = np.log(h_new) - 2.0 * np.log(h_old_1 + h_old_2)
 
         # log acceptance probability
         log_accept_prob = log_like_ratio + log_prior_ratio + \

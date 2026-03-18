@@ -182,8 +182,6 @@ The main issue is that the Laplace approximation requires the posterior to be sm
 
 The second issue is that the posterior is multimodal, as can be seen in \Cref{fig:4a_corner} where the marginal posterior for $s_1$ has 3 distinct peaks. Fitting a single Gaussian around the main peak would ignore an significant proportion of the distribution, leading to an underestimation even if the Hessian was well defined.
 
-
-
 \subsection*{(d) Nested Sampling}
 % Describe briefly (in under 200 words) the details of the algorithm and any relevant settings used.
 To calculate the evidence $Z$ we use the nested sampling package \texttt{dynesty}. Nested sampling works by initialising a set of live points and then iteratively replacing the points of lowest likelihood with one of higher likelihood. By keeping track of how the volume of the prior space changes the algorithm can numerically integrate the posterior to find $Z$.
