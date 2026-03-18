@@ -384,10 +384,8 @@ class RJMCMC:
         log_prior_ratio = log_prior_k + log_prior_s + log_prior_h
 
         # log proposal ratio
-        bk = self.c * min(1, self.prior_k.pmf(k+1)/self.prior_k.pmf(k)) \
-        if k < self.k_max else 0.0
-        dkplus1 = self.c * min(1, self.prior_k.pmf(k)/self.prior_k.pmf(k+1)) \
-        if k+1 > 0 else 0.0
+        bk = self.c * min(1, self.prior_k.pmf(k+1)/self.prior_k.pmf(k))
+        dkplus1 = self.c * min(1, self.prior_k.pmf(k)/self.prior_k.pmf(k+1)) 
         log_proposal_ratio = np.log(dkplus1*self.duration) - np.log(bk*(k+1))
 
         # log Jacobian 
@@ -472,15 +470,13 @@ class RJMCMC:
         log_prior_ratio = log_prior_k + log_prior_s + log_prior_h
 
         # log proposal ratio
-        bkminus1 = self.c * min(1, self.prior_k.pmf(k)/self.prior_k.pmf(k-1)) \
-        if k-1 < self.k_max else 0.0
-        dk = self.c * min(1, self.prior_k.pmf(k-1)/self.prior_k.pmf(k)) \
-        if k > 0 else 0.0
+        bkminus1 = self.c * min(1, self.prior_k.pmf(k)/self.prior_k.pmf(k-1))
+        dk = self.c * min(1, self.prior_k.pmf(k-1)/self.prior_k.pmf(k))
         log_proposal_ratio = np.log(bkminus1*k) - np.log(dk*self.duration)
 
         # log Jacobian 
-        # log_jacobian = logh_j_prime - 2.0 * logsumexp([logh_j,logh_jplus1])
-        log_jacobian = np.log(h_new) - 2.0 * np.log(h_old_1 + h_old_2)
+        log_jacobian = logh_j_prime - 2.0 * logsumexp([logh_j,logh_jplus1])
+        # log_jacobian = np.log(h_new) - 2.0 * np.log(h_old_1 + h_old_2)
 
         # log acceptance probability
         log_accept_prob = log_like_ratio + log_prior_ratio + \

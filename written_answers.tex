@@ -195,6 +195,14 @@ The calculated evidence for $M_1$ was $\log{Z_1} = -118.52 \pm 0.11$ resulting i
 \subsection*{(b) MAP Change Points}
 % Plot the trace plot for the model index 𝑘 to verify that the chain has fully explored the model space. Plot the posterior on the model index 𝑘.
 % What is the preferred maximum a posteriori number of change points?
+The RJMCMC was run for 150,000 iterations, with the results shown in \Cref{fig:5b}. From the trace plot we can see that the model explored the space up to $k = 7$ and the running average stayed roughly between 1 and 2 suggesting the chain converged. The posterior distribution peaks at $k = 1$ which is the maximum a posteriori estimate.
+
+\begin{figure}[htbp]
+    \centering
+    \includegraphics[width=0.95\textwidth]{Ex5b.pdf}
+    \caption{TODO}
+    \label{fig:5b}
+\end{figure}
 
 \subsection*{(c) Model Averaging}
 % Briefly explain (in under 250 words) how you calculated the uncertainty regions
