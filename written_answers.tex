@@ -13,6 +13,7 @@
 
 \title{S2 Coursework: Coal Mining Accident Analysis}
 \author{Fred Lawrence - fl482}
+\date{}
 
 \begin{document}
 
@@ -27,7 +28,7 @@ or $1.72$ accidents/year.
 \begin{figure}[htbp]
     \centering
     \includegraphics[width=0.8\textwidth]{Ex1a.pdf}
-    \caption{Cumulative number of coal mining accidents from 1851 to 1962.}
+    \caption{Cumulative number of coal mining accidents from 1851 to 1962. There were 191 accidents recorded over 40550 days.}
     \label{fig:1a}
 \end{figure}
 
@@ -125,7 +126,7 @@ The prior and posterior distributions are plotted in \Cref{fig:3a}.
 \begin{figure}[htbp]
     \centering
     \includegraphics[width=0.8\textwidth]{Ex3a.pdf}
-    \caption{Prior (dashed line) and posterior (solid line) distributions for the constant rate model $M_0$.}
+    \caption{Prior (dashed line) and posterior (solid line) distributions for the constant rate model $M_0$. The maximum a posteriori value for the accident rate $h_0$ is approximately $0.0047$ accidents per day.}
     \label{fig:3a}
 \end{figure}
 
@@ -142,14 +143,14 @@ The corner plot in \Cref{fig:4a_corner} shows that the $s_1$ parameter has 3 pea
 \begin{figure}[htbp]
     \centering
     \includegraphics[width=0.8\textwidth]{Ex4a_traces.pdf}
-    \caption{Trace plots from the ensemble MCMC sampler for $M_1$.}
+    \caption{Trace plots from the ensemble MCMC sampler for the 1-change point model, $M_1$. The three panels show the evolution of the 32 walkers over 8000 steps for the parameters $s_1$, $h_0$, and $h_1$.}
     \label{fig:4a_traces}
 \end{figure}
 
 \begin{figure}[htbp]
     \centering
     \includegraphics[width=0.8\textwidth]{Ex4a_corner.pdf}
-    \caption{TODO}
+    \caption{Corner plot showing the 1D and 2D marginal posterior distributions for the parameters $s_1$, $h_0$, and $h_1$ in the 1-change point model, $M_1$. The diagonal panels display the 1D marginal posteriors for each parameter, with dashed vertical lines indicating the 16th, 50th (median), and 84th percentiles.}
     \label{fig:4a_corner}
 \end{figure}
 
@@ -169,7 +170,7 @@ The problem arises in this example when trying to evaluate the posterior density
 \begin{figure}[htbp]
     \centering
     \includegraphics[width=0.8\textwidth]{Ex4b.pdf}
-    \caption{TODO}
+    \caption{The plot displays the prior density (dashed red line), the posterior samples (grey histogram), and the posterior Kernel Density Estimate (solid black line) for the difference in accident rates, $\Delta h = h_0 - h_1$. The SDDR is evaluated at the nested condition $\Delta h = 0$, marked by the arrow. While the analytical prior density at this point is 100, the posterior density is effectively zero, with the distribution peaking around $0.006$.}
     \label{fig:4b}
 \end{figure}
 
@@ -188,10 +189,15 @@ To calculate the evidence $Z$ we use the nested sampling package \texttt{dynesty
 
 We used 1000 live points to ensure a high resolution for numerical integration with a default stopping criterion of $\delta \log Z = 0.1$. Design choices to improve the efficiency of the algorithm included setting \texttt{bound='multi'} rather than the default single ellipsoid. The use of multiple bounds is important as we have seen in \Cref{fig:4a_corner} that the posterior is multimodal. Another choice was to use \texttt{sample='rwalk'} method for sampling, which is well-suited to lower dimensional multimodal problems.
 
-The calculated evidence for $M_1$ was $\log{Z_1} = -118.52 \pm 0.11$ resulting in a log Bayes factor $\log B_{10} \approx 28.48$ and the Log Posterior Odds $\approx 29.58$. This suggests that $M_1$ is mathematically superior to $M_0$.
+The calculated evidence for $M_1$ was $\log{Z_1} = -118.53 \pm 0.10$ resulting in a log Bayes factor $\log B_{10} \approx 28.56$ and the Log Posterior Odds $\approx 29.66$. This suggests that $M_1$ is mathematically superior to $M_0$.
 % 172 words
 
 \section*{5. The k change point models, $M_k$}
+% \subsection*{(a) RJMCMC.py}
+% The birth move log prior is 
+% $$\ln\left( \frac{p(k+1, s \cup \{s^*\}, h')}{p(k, s, h)} \right) = \ln\left( \frac{p(k+1)}{p(k)} \right) + \ln\left( \frac{p(s \cup \{s^*\} | k+1)}{p(s | k)} \right) + \ln\left( \frac{p(h' | k+1)}{p(h | k)} \right)$$
+
+
 \subsection*{(b) MAP Change Points}
 % Plot the trace plot for the model index 𝑘 to verify that the chain has fully explored the model space. Plot the posterior on the model index 𝑘.
 % What is the preferred maximum a posteriori number of change points?
@@ -200,12 +206,22 @@ The RJMCMC was run for 150,000 iterations, with the results shown in \Cref{fig:5
 \begin{figure}[htbp]
     \centering
     \includegraphics[width=0.95\textwidth]{Ex5b.pdf}
-    \caption{TODO}
+    \caption{Reversible Jump MCMC (RJMCMC) results for the model index $k$ over 150,000 iterations. \textbf{Left:} Trace plot of the number of change points, demonstrating that the chain successfully explores the model space up to $k = 7$. The red line shows the running mean ($n=100$), which remains stable between 1 and 2, indicating convergence. \textbf{Right:} The marginal posterior probability distribution for $k$. The distribution peaks at $k = 1$, indicating the maximum a posteriori estimate.}
     \label{fig:5b}
 \end{figure}
 
 \subsection*{(c) Model Averaging}
 % Briefly explain (in under 250 words) how you calculated the uncertainty regions
+To calculate the uncertainty regions, we first create an array of 500 evenly spaced points between 0 and $L$. We then remove the first 10\% of RJMCMC samples to account for burn in and for each sample in the remaining 'clean' chain we evaluate $x(t)$ for each point in the time array. The result is a $135,000 \times 500$ matrix where each row is an MCMC iteration and every column is a specific point in time.
+
+The RJMCMC samples models in proportion to their posterior so evaluating the distribution of $x(t)$ values at each time step (down the column) naturally marginalises out the number of change points $k$. We can then construct the median rate and the 50\% and 90\% credible intervals shown in \Cref{fig:5c} by calculating the 5th, 25th, 50th, 75th, and 95th percentiles at each time point.
+
+\begin{figure}[htbp]
+    \centering
+    \includegraphics[width=0.95\textwidth]{Ex5c.pdf}
+    \caption{Inferred accident rate $x(t)$ over time, marginalised over the number of change points $k$ using model averaging from the RJMCMC samples. The solid black line represents the median inferred rate. The dark and light grey shaded regions indicate the 50\% and 90\% credible intervals respectively, calculated from the percentiles of the posterior samples at each time step.}
+    \label{fig:5c}
+\end{figure}
 
 \section*{AI Use}
 % Requirement: Include a declaration of use of autogeneration tools.
