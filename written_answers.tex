@@ -38,7 +38,7 @@ or $1.72$ accidents/year.
 The plain order statistics prior involves drawing $k$ change points from a uniform distribution over the interval $[0, L]$ and then sorting them. This means that the points are independent before sorting and can be clustered tightly together. As shown in \Cref{fig:2a}, the marginal distributions are broad and can peak directly at the boundaries.
 
 The even-numbered prior is constructed by drawing $2k + 1$ points uniformly, sorting them, and then taking the evenly indexed points. This results in a repulsive effect between points, encouraging more evenly spaced change points. It also has the effect of preventing peaks at the boundaries, which makes sense for a change point, as the first and last points are always odd and therefore always excluded. In \Cref{fig:2a} we can also see that the marginal distributions are more distinctly separated and narrower than those of the plain order priors.
-% Word count check: 115 words.
+% Word count check: 145 words.
 
 \begin{figure}[htbp]
     \centering
@@ -135,7 +135,7 @@ The prior and posterior distributions are plotted in \Cref{fig:3a}.
 % Briefly explain (in under 300 words) which algorithm/package you used for the MCMC, any important settings for this algorithm, and any diagnostic checks you performed to check for convergence.
 For the MCMC analysis, we use the \texttt{emcee} package which implements an affine invariant ensemble sampler. It works by creating an ensemble of multiple walkers that propose their next moves based on the position of the other walkers in the ensemble. This makes them invariant to the scale of the parameters, which is important given that $s_1$ is in the order of $10^4$ and $h_0$,$h_1$ are in the order of $10^{-3}$.
 
-There are 3 dimensions to search over $[s_1, h_0, h_1]$ so 32 walkers were used to ensure full coverage. From the trace plots in \Cref{fig:4a_traces} we can see that the burn-in period for the chains was very short and that the set value of 500 steps was sufficient to allow the chains to converge. This fast convergence is likely due to the fact that the walkers were initialised at values close to the peaks for each parameter, chosen from the results of $M_0$. The trace plots each remain stable within a flat, horizontal band suggesting that they reached a stationary distribution. The autocorrelation times ($\tau$) for the chains were calculated to be $44 < \tau < 52$ meaning that the 8000 steps were easily enough to obtain a large number of independent samples. The chains were not thinned as the sample size is too small to be concerned with memory usage. The Gelman-Rubin statistic was not calculated as the walkers look at other walkers to determine their next step, meaning they are inherently not independent.
+There are 3 dimensions to search over $[s_1, h_0, h_1]$ so 32 walkers were used to ensure full coverage. From the trace plots in \Cref{fig:4a_traces} we can see that the chains converged very quickly and that the burn-in period of 500 steps was sufficient to avoid skewing results. This fast convergence is likely due to the fact that the walkers were initialised at values close to the peaks for each parameter, chosen from the results of $M_0$. The trace plots each remain stable within a flat, horizontal band suggesting that they reached a stationary distribution. The autocorrelation times ($\tau$) for the chains were calculated to be $44 < \tau < 52$ meaning that the 8000 steps were easily enough to obtain a large number of independent samples. The chains were not thinned as the sample size is too small to be concerned with memory usage. The Gelman-Rubin statistic was not calculated as the walkers look at other walkers to determine their next step, meaning they are inherently not independent.
 
 The corner plot in \Cref{fig:4a_corner} shows that the $s_1$ parameter has 3 peaks and that a single change point may not accurately describe the data. 
 % 269 words
@@ -179,9 +179,10 @@ The problem arises in this example when trying to evaluate the posterior density
 The Laplace approximation is a semi analytic technique for calculating the evidence which approximates the posterior as a Gaussian around its peak. For $M_1$ there are two issues that prevent us from using this approximation effectively.
 $$\log Z \approx \log P(D | \theta_{MAP}, M) + \log \pi(\theta_{MAP} | M) + \frac{d}{2} \log(2\pi) - \frac{1}{2} \log |H|$$
 
-The main issue is that the Laplace approximation requires the posterior to be smooth as it calculates the Hessian matrix $H$. As we move along $s_1$, the likelihood is completely flat until a day where an accident occurs, at which point it discontinuously jumps. This will result in an undefined derivative at data points and 0 everywhere else. The determinant of the Hessian $|H|$ will therefore equal 0 and the $-\frac{1}{2} \log(0)$ term will tend to infinity.
+The main issue is that the Laplace approximation requires the posterior to be smooth as it calculates the Hessian matrix $H$. As $s_1$ varies continuously, the log likelihood changes discontinuously each time $s_1$ passes through an accident time $y_i$, because the rate assigned to that accident jumps between $h_0$ and $h_1$. This will result in a second derivative with respect to $s_1$ that is undefined at $y_i$ and 0 everywhere else. The determinant of the Hessian $|H|$ will therefore equal 0 making the $-\frac{1}{2} \log(0)$ term mathematically undefined.
 
 The second issue is that the posterior is multimodal, as can be seen in \Cref{fig:4a_corner} where the marginal posterior for $s_1$ has 3 distinct peaks. Fitting a single Gaussian around the main peak would ignore an significant proportion of the distribution, leading to an underestimation even if the Hessian was well defined.
+% 196 words
 
 \subsection*{(d) Nested Sampling}
 % Describe briefly (in under 200 words) the details of the algorithm and any relevant settings used.
@@ -189,7 +190,7 @@ To calculate the evidence $Z$ we use the nested sampling package \texttt{dynesty
 
 We used 1000 live points to ensure a high resolution for numerical integration with a default stopping criterion of $\delta \log Z = 0.1$. Design choices to improve the efficiency of the algorithm included setting \texttt{bound='multi'} rather than the default single ellipsoid. The use of multiple bounds is important as we have seen in \Cref{fig:4a_corner} that the posterior is multimodal. Another choice was to use \texttt{sample='rwalk'} method for sampling, which is well-suited to lower dimensional multimodal problems.
 
-The calculated evidence for $M_1$ was $\log{Z_1} = -118.53 \pm 0.10$ resulting in a log Bayes factor $\log B_{10} \approx 28.56$ and the Log Posterior Odds $\approx 29.66$. This suggests that $M_1$ is mathematically superior to $M_0$.
+The calculated evidence for $M_1$ was $\log{Z_1} = -1118.53 \pm 0.10$ resulting in a log Bayes factor $\log B_{10} \approx 28.56$ and the Log Posterior Odds $\approx 29.66$. This suggests that $M_1$ is mathematically superior to $M_0$.
 % 172 words
 
 \section*{5. The k change point models, $M_k$}
@@ -201,7 +202,7 @@ The calculated evidence for $M_1$ was $\log{Z_1} = -118.53 \pm 0.10$ resulting i
 \subsection*{(b) MAP Change Points}
 % Plot the trace plot for the model index 𝑘 to verify that the chain has fully explored the model space. Plot the posterior on the model index 𝑘.
 % What is the preferred maximum a posteriori number of change points?
-The RJMCMC was run for 150,000 iterations, with the results shown in \Cref{fig:5b}. From the trace plot we can see that the model explored the space up to $k = 7$ and the running average stayed roughly between 1 and 2 suggesting the chain converged. The posterior distribution peaks at $k = 1$ which is the maximum a posteriori estimate.
+The RJMCMC was run for 150,000 iterations. The trace plot in \Cref{fig:5b} shows that the chain mixes well, staying mostly between between $k=1$ and $k=3$, occasionally jumping as high as $k=7$. The chain converged rapidly with the running mean stabilising within the first few thousand iterations, so only the first 10\% of samples were discarded as burn in. The posterior distribution on $k$ peaks at $k=1$ ($P \approx 0.57$), followed by $k=2$ ($P \approx 0.31$) and $k=3$ ($P \approx 0.10$), with negligible probability for $k \geq 4$. The maximum a posteriori number of change points is therefore $k=1$.
 
 \begin{figure}[htbp]
     \centering
@@ -225,6 +226,6 @@ The RJMCMC samples models in proportion to their posterior so evaluating the dis
 
 \section*{AI Use}
 % Requirement: Include a declaration of use of autogeneration tools.
-I have used autogeneration tools to assist with code debugging, LaTeX formatting and helping to generate figures. This declaration is made in accordance with the Course Handbook.
+I have used autogeneration tools to assist with code debugging, LaTeX formatting, helping to generate figures and creating `README.md`. This declaration is made in accordance with the Course Handbook.
 
 \end{document}
