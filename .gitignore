@@ -3,6 +3,7 @@ S2CWvenv/
 
 # notes
 *.md
+!README.md
 
 # LaTeX auxiliary files
 *.aux
@@ -18,7 +19,8 @@ __pycache__/
 *.pyc
 
 # Build directories
-build/
+build/*
+!build/written_answers.pdf
 out/
 
 # DS store
