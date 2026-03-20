@@ -10,4 +10,5 @@ dependencies = [
     "emcee",
     "corner",
     "dynesty",
-]
+    "ipykernel",
+    ]
