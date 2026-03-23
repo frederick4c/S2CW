@@ -464,7 +464,7 @@ class RJMCMC:
         log_prior_s = -np.log(2*k) - np.log(2*k + 1) + 2*np.log(self.duration) + np.log(s_jplus1 - s_jminus1) - np.log(s_jplus1 - s_j) - np.log(s_j - s_jminus1)
         
         # height prior ratio
-        log_prior_h = self.alpha*np.log(self.beta) - gammaln(self.alpha) + (self.alpha - 1)*(np.log(h_new) - np.log(h_old_1) - np.log(h_old_2)) - self.beta*(h_new - h_old_1 - h_old_2)
+        log_prior_h = -self.alpha*np.log(self.beta) + gammaln(self.alpha) + (self.alpha - 1)*(np.log(h_new) - np.log(h_old_1) - np.log(h_old_2)) - self.beta*(h_new - h_old_1 - h_old_2)
     
         # log prior ratio
         log_prior_ratio = log_prior_k + log_prior_s + log_prior_h

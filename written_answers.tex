@@ -202,20 +202,22 @@ The calculated evidence for $M_1$ was $\log{Z_1} = -1118.53 \pm 0.10$ resulting 
 \subsection*{(b) MAP Change Points}
 % Plot the trace plot for the model index 𝑘 to verify that the chain has fully explored the model space. Plot the posterior on the model index 𝑘.
 % What is the preferred maximum a posteriori number of change points?
-The RJMCMC was run for 150,000 iterations. The trace plot in \Cref{fig:5b} shows that the chain mixes well, staying mostly between between $k=1$ and $k=3$, occasionally jumping as high as $k=7$. The chain converged rapidly with the running mean stabilising within the first few thousand iterations, so only the first 10\% of samples were discarded as burn in. The posterior distribution on $k$ peaks at $k=1$ ($P \approx 0.57$), followed by $k=2$ ($P \approx 0.31$) and $k=3$ ($P \approx 0.10$), with negligible probability for $k \geq 4$. The maximum a posteriori number of change points is therefore $k=1$.
+The RJMCMC was run for 300,000 iterations. The trace plot in \Cref{fig:5b} shows that the chain explored a wide range of models and mixed well, staying mostly between between $k=2$ and $k=5$, occasionally jumping as high as $k=11$. The chain converged rapidly with the running mean stabilising within the first few thousand iterations, so only the first 10\% of samples were discarded as burn in. The posterior distribution on $k$ peaks at $k=3$ ($P \approx 0.28$), which is the maximum a priori estimate, followed by $k=2$ ($P \approx 0.23$) and $k=4$ ($P \approx 0.22$). The posterior is broadly consistent with the Poisson prior, shown in blue, but is more strongly peaked at $k=3$ and slightly favours larger values of $k$.
 
 \begin{figure}[htbp]
     \centering
     \includegraphics[width=0.95\textwidth]{Ex5b.pdf}
-    \caption{Reversible Jump MCMC (RJMCMC) results for the model index $k$ over 150,000 iterations. \textbf{Left:} Trace plot of the number of change points, demonstrating that the chain successfully explores the model space up to $k = 7$. The red line shows the running mean ($n=100$), which remains stable between 1 and 2, indicating convergence. \textbf{Right:} The marginal posterior probability distribution for $k$. The distribution peaks at $k = 1$, indicating the maximum a posteriori estimate.}
+    \caption{Reversible Jump MCMC (RJMCMC) results for the model index $k$ over 300,000 iterations. \textbf{Left:} Trace plot of the number of change points, demonstrating that the chain successfully explores the model space up to $k = 11$. The red line shows the running mean ($n=700$), which remains mostly between 2 and 5, indicating convergence. \textbf{Right:} The marginal posterior probability distribution for $k$ with the Poisson prior plotted in blue. The posterior distribution peaks at $k = 3$, indicating the maximum a posteriori estimate.}
     \label{fig:5b}
 \end{figure}
 
 \subsection*{(c) Model Averaging}
 % Briefly explain (in under 250 words) how you calculated the uncertainty regions
-To calculate the uncertainty regions, we first create an array of 500 evenly spaced points between 0 and $L$. We then remove the first 10\% of RJMCMC samples to account for burn in and for each sample in the remaining 'clean' chain we evaluate $x(t)$ for each point in the time array. The result is a $135,000 \times 500$ matrix where each row is an MCMC iteration and every column is a specific point in time.
+After discarding the first 10\% of samples as burn in (based on the trace plot), the remaining RJMCMC samples were used for model averaging. The autocorrelation time was estimated to be $\tau \approx 195$, giving a moderate effective sample size (ESS) of approximately 1384 so the estimates may be slightly noisy. The chain was not thinned as memory was not an issue. 
 
-The RJMCMC samples models in proportion to their posterior so evaluating the distribution of $x(t)$ values at each time step (down the column) naturally marginalises out the number of change points $k$. We can then construct the median rate and the 50\% and 90\% credible intervals shown in \Cref{fig:5c} by calculating the 5th, 25th, 50th, 75th, and 95th percentiles at each time point.
+To calculate the uncertainty regions, we define a grid of 500 evenly spaced time points over $[0,L]$. For each retained RJMCMC sample we evaluate $x(t)$ for each point in the grid, producing a $270,000 \times 500$ matrix where each row is an MCMC iteration and every column is a specific point in time.
+
+Since RJMCMC samples models in proportion to their posterior, evaluating the distribution of $x(t)$ values at each time step (down the column) naturally marginalises over the number of change points $k$. We can then construct the median rate and the 50\% and 90\% credible intervals at each time point shown in \Cref{fig:5c} by calculating the 5th, 25th, 50th, 75th, and 95th percentiles. Despite independently calculating the marginal uncertainty at each time point, the curve is smooth as it averages over many piecewise models. The final results suggest a strong decrease around 1890 with smaller variations around 1930 and 1945, roughly the time of the second world war.
 
 \begin{figure}[htbp]
     \centering
@@ -225,7 +227,6 @@ The RJMCMC samples models in proportion to their posterior so evaluating the dis
 \end{figure}
 
 \section*{AI Use}
-% Requirement: Include a declaration of use of autogeneration tools.
 I have used autogeneration tools to assist with code debugging, LaTeX formatting, helping to generate figures and creating `README.md`. This declaration is made in accordance with the Course Handbook.
 
 \end{document}
