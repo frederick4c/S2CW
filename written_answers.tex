@@ -21,8 +21,7 @@
 
 \section*{1. Accident Data}
 % Question: Mean rate and cumulative plot
-The total number of accidents recorded is $N=191$ over a period of $L=40550$ days. The mean rate of accidents is $0.00471$ accidents/day
-or $1.72$ accidents/year.
+The total number of accidents recorded is $N=191$ over a period of $L=40550$ days. The mean rate of accidents is $0.00471$ accidents/day or $1.72$ accidents/year. The cumulative plot shows non linear increase which suggests the accident rate may not be constant.
 \[ \bar{\lambda} = \frac{N}{L} \approx 0.0047 \text{ accidents/day.} \]
 
 \begin{figure}[htbp]
@@ -37,7 +36,7 @@ or $1.72$ accidents/year.
 % Limit: Under 200 words.
 The plain order statistics prior involves drawing $k$ change points from a uniform distribution over the interval $[0, L]$ and then sorting them. This means that the points are independent before sorting and can be clustered tightly together. As shown in \Cref{fig:2a}, the marginal distributions are broad and can peak directly at the boundaries.
 
-The even-numbered prior is constructed by drawing $2k + 1$ points uniformly, sorting them, and then taking the evenly indexed points. This results in a repulsive effect between points, encouraging more evenly spaced change points. It also has the effect of preventing peaks at the boundaries, which makes sense for a change point, as the first and last points are always odd and therefore always excluded. In \Cref{fig:2a} we can also see that the marginal distributions are more distinctly separated and narrower than those of the plain order priors.
+The even-numbered prior is constructed by drawing $2k + 1$ points uniformly, sorting them, and then taking the evenly indexed points. This results in a repulsive effect between points, encouraging more evenly spaced change points. It also has the effect of preventing peaks at the boundaries, which is appropriate for a change point, as the first and last points are always odd and therefore always excluded. In \Cref{fig:2a} we can also see that the marginal distributions are more distinctly separated and narrower than those of the plain order priors.
 % Word count check: 145 words.
 
 \begin{figure}[htbp]
@@ -84,8 +83,8 @@ $$\pi(s_1, s_2, \dots, s_k | M_k) \propto \prod_{j=1}^{k+1} g_j$$
 
 \section*{3. The constant rate model, $M_0$}
 % Requirement: Prior vs Posterior plot and evidence calculation.
-From the instructions we know that the log likelihood is given by 
-$$\log \mathcal{L}(\{I_i\} | \{s_j\}, \{h_j\}, M_k) = \sum_{i=1}^{N} \log h_0 - \int_{0}^{L} dt \, x(t)$$
+The log likelihood of model $M_0$ is given by 
+$$\log \mathcal{L}(\{I_i\} | h_0, M_0) = \sum_{i=1}^{N} \log h_0 - \int_{0}^{L} dt \, x(t)$$
 
 Since $x(t) = h_0$ is a constant over the interval $L$ 
 $$\log \mathcal{L}(\{I_i\} | h_0, M_0) = N \log(h_0) - h_0 L$$ 
@@ -135,9 +134,9 @@ The prior and posterior distributions are plotted in \Cref{fig:3a}.
 % Briefly explain (in under 300 words) which algorithm/package you used for the MCMC, any important settings for this algorithm, and any diagnostic checks you performed to check for convergence.
 For the MCMC analysis, we use the \texttt{emcee} package which implements an affine invariant ensemble sampler. It works by creating an ensemble of multiple walkers that propose their next moves based on the position of the other walkers in the ensemble. This makes them invariant to the scale of the parameters, which is important given that $s_1$ is in the order of $10^4$ and $h_0$,$h_1$ are in the order of $10^{-3}$.
 
-There are 3 dimensions to search over $[s_1, h_0, h_1]$ so 32 walkers were used to ensure full coverage. From the trace plots in \Cref{fig:4a_traces} we can see that the chains converged very quickly and that the burn-in period of 500 steps was sufficient to avoid skewing results. This fast convergence is likely due to the fact that the walkers were initialised at values close to the peaks for each parameter, chosen from the results of $M_0$. The trace plots each remain stable within a flat, horizontal band suggesting that they reached a stationary distribution. The autocorrelation times ($\tau$) for the chains were calculated to be $44 < \tau < 52$ meaning that the 8000 steps were easily enough to obtain a large number of independent samples. The chains were not thinned as the sample size is too small to be concerned with memory usage. The Gelman-Rubin statistic was not calculated as the walkers look at other walkers to determine their next step, meaning they are inherently not independent.
+There are 3 dimensions to search over $[s_1, h_0, h_1]$ so 32 walkers were used to ensure full coverage. From the trace plots in \Cref{fig:4a_traces} we can see that the chains converged quickly so only the first 500 steps were discarded as burn-in. This fast convergence is likely due to the fact that the walkers were initialised near plausible parameter values, chosen from the results of $M_0$. The trace plots each remain stable within a flat, horizontal band suggesting that they reached a stationary distribution. The autocorrelation times ($\tau$) for the chains were calculated to be $44 < \tau < 52$ meaning that the 8000 steps were easily enough to obtain a large number of independent samples. The chains were not thinned as the sample size is too small to be concerned with memory usage. The Gelman-Rubin statistic was not calculated as the walkers look at other walkers to determine their next step, meaning they are inherently not independent.
 
-The corner plot in \Cref{fig:4a_corner} shows that the $s_1$ parameter has 3 peaks and that a single change point may not accurately describe the data. 
+The corner plot in \Cref{fig:4a_corner} shows that the $s_1$ parameter has 3 peaks and that there are several distinct change point locations that are plausible. 
 % 269 words
 
 \begin{figure}[htbp]
@@ -165,7 +164,7 @@ $$B_{01} = \frac{P(\Delta h = 0 | D, M_1)}{\pi(\Delta h = 0 | M_1)}$$
 The prior density can be calculated analytically
 $$\pi(\Delta h) = \frac{\beta}{2} \exp(-\beta |\Delta h|) = \frac{200}{2} \exp(0) = 100$$
 
-The problem arises in this example when trying to evaluate the posterior density at $\Delta h = 0$. From \Cref{fig:4a_corner}, we can see that the marginalised posteriors for $h_0$ and $h_1$ are tightly constrained around 0.0085 and 0.0026 respectively, meaning there will be very little overlap and very few, if any, MCMC samples with $\Delta h = 0$. As a result, we can see that the kernel density estimate for the posterior difference in \Cref{fig:4b} peaks at $\approx 0.006$ and has effectively 0 density at $\Delta h = 0$. This will result in an SDDR $B_{01}$ of 0 and $\log B_{01} \to -\infty$.
+The problem arises in this example when trying to evaluate the posterior density at $\Delta h = 0$. From \Cref{fig:4a_corner}, we can see that the marginalised posteriors for $h_0$ and $h_1$ are tightly constrained around 0.0085 and 0.0026 respectively, meaning there will be very little overlap and very few, if any, MCMC samples with $\Delta h = 0$. As a result, we can see that the kernel density estimate for the posterior difference in \Cref{fig:4b} peaks at $\approx 0.006$ and has effectively 0 density at $\Delta h = 0$.  This makes the estimate for the SDDR highly numerically sensitive and unstable.
 
 \begin{figure}[htbp]
     \centering
@@ -188,9 +187,9 @@ The second issue is that the posterior is multimodal, as can be seen in \Cref{fi
 % Describe briefly (in under 200 words) the details of the algorithm and any relevant settings used.
 To calculate the evidence $Z$ we use the nested sampling package \texttt{dynesty}. Nested sampling works by initialising a set of live points and then iteratively replacing the points of lowest likelihood with one of higher likelihood. By keeping track of how the volume of the prior space changes the algorithm can numerically integrate the posterior to find $Z$.
 
-We used 1000 live points to ensure a high resolution for numerical integration with a default stopping criterion of $\delta \log Z = 0.1$. Design choices to improve the efficiency of the algorithm included setting \texttt{bound='multi'} rather than the default single ellipsoid. The use of multiple bounds is important as we have seen in \Cref{fig:4a_corner} that the posterior is multimodal. Another choice was to use \texttt{sample='rwalk'} method for sampling, which is well-suited to lower dimensional multimodal problems.
+We used 1000 live points to ensure a high resolution for numerical integration with a default stopping criterion of $\delta \log Z = 0.1$. Design choices to improve the efficiency of the algorithm included setting \texttt{bound='multi'} rather than the default single ellipsoid. The use of multiple bounds is important as we have seen in \Cref{fig:4a_corner} that the posterior is multimodal. Another choice was to use \texttt{sample='rwalk'} method for sampling, which is well suited to lower dimensional multimodal problems.
 
-The calculated evidence for $M_1$ was $\log{Z_1} = -1188.53 \pm 0.10$ resulting in a log Bayes factor $\log B_{10} \approx 28.56$ and the Log Posterior Odds $\approx 29.66$. This suggests that $M_1$ is mathematically superior to $M_0$.
+The calculated evidence for $M_1$ was $\log{Z_1} = -1188.53 \pm 0.10$ resulting in a log Bayes factor $\log B_{10} \approx 28.56$ and, given the log prior odds $= \log 3$, the log posterior odds $\approx 29.66$. This gives strong support for $M_1$ over $M_0$ under the chosen prior.
 % 172 words
 
 \section*{5. The k change point models, $M_k$}
@@ -202,7 +201,7 @@ The calculated evidence for $M_1$ was $\log{Z_1} = -1188.53 \pm 0.10$ resulting 
 \subsection*{(b) MAP Change Points}
 % Plot the trace plot for the model index 𝑘 to verify that the chain has fully explored the model space. Plot the posterior on the model index 𝑘.
 % What is the preferred maximum a posteriori number of change points?
-The RJMCMC was run for 300,000 iterations. The trace plot in \Cref{fig:5b} shows that the chain explored a wide range of models and mixed well, staying mostly between $k=2$ and $k=5$, occasionally jumping as high as $k=11$. The chain converged rapidly with the running mean stabilising within the first few thousand iterations, so only the first 10\% of samples were discarded as burn-in. The posterior distribution on $k$ peaks at $k=3$ ($P \approx 0.28$), which is the maximum a posteriori estimate, followed by $k=2$ ($P \approx 0.23$) and $k=4$ ($P \approx 0.22$). The posterior is broadly consistent with the Poisson prior, shown in blue, but is more strongly peaked at $k=3$ and slightly favours larger values of $k$.
+The RJMCMC was run for 300,000 iterations. The trace plot in \Cref{fig:5b} shows that the chain explored a wide range of models and mixed well, staying mostly between $k=2$ and $k=5$, occasionally jumping as high as $k=11$. The chain converged rapidly with the running mean stabilising within the first few thousand iterations, so only the first 10\% of samples were discarded as burn-in. The posterior distribution on $k$ peaks at $k=3$ ($P \approx 0.28$), which is the maximum a posteriori estimate, followed by $k=2$ ($P \approx 0.23$) and $k=4$ ($P \approx 0.22$). The posterior is consistent with the Poisson prior, also peaked at $k=3$, but is more concentrated indicating that the data reinforces the prior belief without fully resolving model uncertainty.
 
 \begin{figure}[htbp]
     \centering
@@ -213,11 +212,11 @@ The RJMCMC was run for 300,000 iterations. The trace plot in \Cref{fig:5b} shows
 
 \subsection*{(c) Model Averaging}
 % Briefly explain (in under 250 words) how you calculated the uncertainty regions
-After discarding the first 10\% of samples as burn-in (based on the trace plot), the remaining RJMCMC samples were used for model averaging. The autocorrelation time was estimated to be $\tau \approx 195$, giving a moderate effective sample size (ESS) of approximately 1384 so the estimates may be slightly noisy. The chain was not thinned as memory was not an issue. 
+After discarding the first 10\% of samples as burn-in (based on the trace plot), the remaining RJMCMC samples were used for model averaging. The autocorrelation time was estimated to be $\tau \approx 195$, giving a moderate effective sample size of approximately 1384 so the estimates may be slightly noisy. The chain was not thinned as memory was not an issue. 
 
 To calculate the uncertainty regions, we define a grid of 500 evenly spaced time points over $[0,L]$. For each retained RJMCMC sample we evaluate $x(t)$ for each point in the grid, producing a $270,000 \times 500$ matrix where each row is an MCMC iteration and every column is a specific point in time.
 
-Since RJMCMC samples models in proportion to their posterior, evaluating the distribution of $x(t)$ values at each time step (down the column) naturally marginalises over the number of change points $k$. We can then construct the median rate and the 50\% and 90\% credible intervals at each time point shown in \Cref{fig:5c} by calculating the 5th, 25th, 50th, 75th, and 95th percentiles. Despite independently calculating the marginal uncertainty at each time point, the curve is smooth as it averages over many piecewise models. The final results suggest a strong decrease around 1890 with smaller variations around 1930 and 1945, roughly the time of the Second World War.
+Since RJMCMC samples models in proportion to their posterior, evaluating the distribution of $x(t)$ values at each time step (down the column) naturally marginalises over the number of change points $k$. We can then construct the median rate and the 50\% and 90\% credible intervals at each time point shown in \Cref{fig:5c} by calculating the 5th, 25th, 50th, 75th, and 95th percentiles. Despite independently calculating the marginal uncertainty at each time point, the curve is smooth as it averages over many piecewise models. The final results suggest a strong decrease around 1890 with smaller variations around 1930 and 1945.
 
 \begin{figure}[htbp]
     \centering
