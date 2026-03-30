@@ -43,7 +43,7 @@ The even-numbered prior is constructed by drawing $2k + 1$ points uniformly, sor
 \begin{figure}[htbp]
     \centering
     \includegraphics[width=0.8\textwidth]{Ex2a.pdf}
-    \caption{Comparison of plain and even-numbered order statistics priors for $k=4$ accross different values of $j$. Plain order priors are shown with a dashed line and even numbered priors with a solid line.}
+    \caption{Comparison of plain and even-numbered order statistics priors for $k=4$ across different values of $j$. Plain order priors are shown with a dashed line and even-numbered priors with a solid line.}
     \label{fig:2a}
 \end{figure}
 
@@ -55,7 +55,7 @@ $$P(u_{(1)}, u_{(2)}, \dots, u_{(2k+1)}) = (2k + 1)!$$
 
 This is valid only on the strictly ordered region $0 < u_{(1)} < u_{(2)} < \dots < u_{(2k+1)} < 1$.
 
-For the even numbered pdf we only keep even-numbered order statistics $\hat{s}_j = u_{(2j)}$ so must marginalise the plain order pdf over all the other discarded points. We know that the points are ordered and on the unit interval $[0, 1]$ so the integral is
+For the even-numbered pdf we only keep even-numbered order statistics $\hat{s}_j = u_{(2j)}$ so must marginalise the plain order pdf over all the other discarded points. We know that the points are ordered and on the unit interval $[0, 1]$ so the integral is
 $$P(\hat{s}_1, \dots, \hat{s}_k) = \int_{0}^{\hat{s}_1} \int_{\hat{s}_1}^{\hat{s}_2} \dots \int_{\hat{s}_k}^{1} (2k + 1)! \, du_{(2k+1)} \dots du_{(3)} du_{(1)}$$
 
 Because the integrand $(2k+1)!$ is a constant, each integral becomes the length of the interval between the 2 points on the bounds, or the gap $\hat{g}_j$ between them.
@@ -157,7 +157,7 @@ The corner plot in \Cref{fig:4a_corner} shows that the $s_1$ parameter has 3 pea
 \subsection*{(b) Savage Dickey Density Ratio}
 % Explain briefly (in under 200 words) how the Savage Dickey density ratio can, in principle, be used to find the ratio of evidences between the models 𝑀1 and 𝑀0.
 % Also explain what difficulty is encountered when trying to use the Savage Dickey density ratio in this example. include plot
-The Savage-Dickey Density Ratio (SDDR) is a method for calculating the evidence ratio of two nested models with consistent priors. Since $M_0$ can be interpreted as a special case of $M_1$ where $h_0 = h_1$, the models are nested and the priors on the parameters $h$ are consistent as they given by the same Gamma distribution. This means that the SDDR can, in principle, be used to find the evidence ratio of $M_1$ to $M_0$.
+The Savage-Dickey Density Ratio (SDDR) is a method for calculating the evidence ratio of two nested models with consistent priors. Since $M_0$ can be interpreted as a special case of $M_1$ where $h_0 = h_1$, the models are nested and the priors on the parameters $h$ are consistent as they are given by the same Gamma distribution. This means that the SDDR can, in principle, be used to find the evidence ratio of $M_1$ to $M_0$.
 
 We calculate the SDDR by the ratio of the posterior and prior density under the nested condition $\Delta h = h_0 - h_1 = 0$.
 $$B_{01} = \frac{P(\Delta h = 0 | D, M_1)}{\pi(\Delta h = 0 | M_1)}$$
@@ -176,13 +176,13 @@ The problem arises in this example when trying to evaluate the posterior density
 
 \subsection*{(c) Laplace Approximation}
 % Explain briefly (in under 200 words) what difficulty is encountered if one tried to use the Laplace approximation to estimate the evidence 𝑍1 ≡ 𝑃({𝐼𝑖}|𝑀1) for the model 𝑀1
-The Laplace approximation is a semi analytic technique for calculating the evidence which approximates the posterior as a Gaussian around its peak. For $M_1$ there are two issues that prevent us from using this approximation effectively.
+The Laplace approximation is a semi-analytic technique for calculating the evidence which approximates the posterior as a Gaussian around its peak. For $M_1$ there are two issues that prevent us from using this approximation effectively.
 $$\log Z \approx \log P(D | \theta_{MAP}, M) + \log \pi(\theta_{MAP} | M) + \frac{d}{2} \log(2\pi) - \frac{1}{2} \log |H|$$
 
-The main issue is that the Laplace approximation requires the posterior to be smooth as it calculates the Hessian matrix $H$. As $s_1$ varies continuously, the log likelihood changes discontinuously each time $s_1$ passes through an accident time $y_i$, because the rate assigned to that accident jumps between $h_0$ and $h_1$. This will result in a second derivative with respect to $s_1$ that is undefined at $y_i$ and 0 everywhere else. The determinant of the Hessian $|H|$ will therefore equal 0 making the $-\frac{1}{2} \log(0)$ term mathematically undefined.
+The Laplace approximation assumes the posterior can be well approximated by a Gaussian near its peak, so the log posterior must have well-defined local curvature. In this case, the condition is violated for the change point parameter $s_1$. As $s_1$ varies continuously, the log likelihood changes abruptly each time $s_1$ passes through an accident time $y_i$, because the rate assigned to that accident jumps between $h_0$ and $h_1$. This produces flat regions separated by abrupt jumps, so the log posterior is not locally quadratic around its maximum and the Hessian matrix $H$ does not provide a meaningful description of the local curvature.
 
-The second issue is that the posterior is multimodal, as can be seen in \Cref{fig:4a_corner} where the marginal posterior for $s_1$ has 3 distinct peaks. Fitting a single Gaussian around the main peak would ignore an significant proportion of the distribution, leading to an underestimation even if the Hessian was well defined.
-% 196 words
+The second issue is that the posterior is multimodal, as can be seen in \Cref{fig:4a_corner} where the marginal posterior for $s_1$ has 3 distinct peaks. Fitting a single Gaussian around the MAP estimate would ignore these separated parts of probability mass, leading to an underestimation of the evidence.
+% 187 words
 
 \subsection*{(d) Nested Sampling}
 % Describe briefly (in under 200 words) the details of the algorithm and any relevant settings used.
@@ -190,7 +190,7 @@ To calculate the evidence $Z$ we use the nested sampling package \texttt{dynesty
 
 We used 1000 live points to ensure a high resolution for numerical integration with a default stopping criterion of $\delta \log Z = 0.1$. Design choices to improve the efficiency of the algorithm included setting \texttt{bound='multi'} rather than the default single ellipsoid. The use of multiple bounds is important as we have seen in \Cref{fig:4a_corner} that the posterior is multimodal. Another choice was to use \texttt{sample='rwalk'} method for sampling, which is well-suited to lower dimensional multimodal problems.
 
-The calculated evidence for $M_1$ was $\log{Z_1} = -1118.53 \pm 0.10$ resulting in a log Bayes factor $\log B_{10} \approx 28.56$ and the Log Posterior Odds $\approx 29.66$. This suggests that $M_1$ is mathematically superior to $M_0$.
+The calculated evidence for $M_1$ was $\log{Z_1} = -1188.53 \pm 0.10$ resulting in a log Bayes factor $\log B_{10} \approx 28.56$ and the Log Posterior Odds $\approx 29.66$. This suggests that $M_1$ is mathematically superior to $M_0$.
 % 172 words
 
 \section*{5. The k change point models, $M_k$}
@@ -202,7 +202,7 @@ The calculated evidence for $M_1$ was $\log{Z_1} = -1118.53 \pm 0.10$ resulting 
 \subsection*{(b) MAP Change Points}
 % Plot the trace plot for the model index 𝑘 to verify that the chain has fully explored the model space. Plot the posterior on the model index 𝑘.
 % What is the preferred maximum a posteriori number of change points?
-The RJMCMC was run for 300,000 iterations. The trace plot in \Cref{fig:5b} shows that the chain explored a wide range of models and mixed well, staying mostly between between $k=2$ and $k=5$, occasionally jumping as high as $k=11$. The chain converged rapidly with the running mean stabilising within the first few thousand iterations, so only the first 10\% of samples were discarded as burn in. The posterior distribution on $k$ peaks at $k=3$ ($P \approx 0.28$), which is the maximum a priori estimate, followed by $k=2$ ($P \approx 0.23$) and $k=4$ ($P \approx 0.22$). The posterior is broadly consistent with the Poisson prior, shown in blue, but is more strongly peaked at $k=3$ and slightly favours larger values of $k$.
+The RJMCMC was run for 300,000 iterations. The trace plot in \Cref{fig:5b} shows that the chain explored a wide range of models and mixed well, staying mostly between $k=2$ and $k=5$, occasionally jumping as high as $k=11$. The chain converged rapidly with the running mean stabilising within the first few thousand iterations, so only the first 10\% of samples were discarded as burn-in. The posterior distribution on $k$ peaks at $k=3$ ($P \approx 0.28$), which is the maximum a posteriori estimate, followed by $k=2$ ($P \approx 0.23$) and $k=4$ ($P \approx 0.22$). The posterior is broadly consistent with the Poisson prior, shown in blue, but is more strongly peaked at $k=3$ and slightly favours larger values of $k$.
 
 \begin{figure}[htbp]
     \centering
@@ -213,11 +213,11 @@ The RJMCMC was run for 300,000 iterations. The trace plot in \Cref{fig:5b} shows
 
 \subsection*{(c) Model Averaging}
 % Briefly explain (in under 250 words) how you calculated the uncertainty regions
-After discarding the first 10\% of samples as burn in (based on the trace plot), the remaining RJMCMC samples were used for model averaging. The autocorrelation time was estimated to be $\tau \approx 195$, giving a moderate effective sample size (ESS) of approximately 1384 so the estimates may be slightly noisy. The chain was not thinned as memory was not an issue. 
+After discarding the first 10\% of samples as burn-in (based on the trace plot), the remaining RJMCMC samples were used for model averaging. The autocorrelation time was estimated to be $\tau \approx 195$, giving a moderate effective sample size (ESS) of approximately 1384 so the estimates may be slightly noisy. The chain was not thinned as memory was not an issue. 
 
 To calculate the uncertainty regions, we define a grid of 500 evenly spaced time points over $[0,L]$. For each retained RJMCMC sample we evaluate $x(t)$ for each point in the grid, producing a $270,000 \times 500$ matrix where each row is an MCMC iteration and every column is a specific point in time.
 
-Since RJMCMC samples models in proportion to their posterior, evaluating the distribution of $x(t)$ values at each time step (down the column) naturally marginalises over the number of change points $k$. We can then construct the median rate and the 50\% and 90\% credible intervals at each time point shown in \Cref{fig:5c} by calculating the 5th, 25th, 50th, 75th, and 95th percentiles. Despite independently calculating the marginal uncertainty at each time point, the curve is smooth as it averages over many piecewise models. The final results suggest a strong decrease around 1890 with smaller variations around 1930 and 1945, roughly the time of the second world war.
+Since RJMCMC samples models in proportion to their posterior, evaluating the distribution of $x(t)$ values at each time step (down the column) naturally marginalises over the number of change points $k$. We can then construct the median rate and the 50\% and 90\% credible intervals at each time point shown in \Cref{fig:5c} by calculating the 5th, 25th, 50th, 75th, and 95th percentiles. Despite independently calculating the marginal uncertainty at each time point, the curve is smooth as it averages over many piecewise models. The final results suggest a strong decrease around 1890 with smaller variations around 1930 and 1945, roughly the time of the Second World War.
 
 \begin{figure}[htbp]
     \centering

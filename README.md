@@ -1,5 +1,5 @@
 # S2 Coursework: Coal Mining Accident Analysis
-Fred Lawrence -fl482
+Fred Lawrence - fl482
 
 ## Repository Structure
 
@@ -16,7 +16,7 @@ Fred Lawrence -fl482
 ## Setup
 
 ```bash
-python -m venv S2CWvenv
+python3 -m venv S2CWvenv
 source S2CWvenv/bin/activate
 pip install -e .
 ```
@@ -30,5 +30,5 @@ jupyter notebook notebook.ipynb
 ## Compiling the Written Answers
 
 ```bash
-pdflatex written_answers.tex
+latexmk -pdf written_answers.tex
 ```

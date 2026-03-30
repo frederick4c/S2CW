@@ -1,7 +1,13 @@
+[build-system]
+requires = ["setuptools>=68", "wheel"]
+build-backend = "setuptools.build_meta"
+
 [project]
 name = "s2cw"
 version = "0.1.0"
 description = "S2 Coursework project"
+readme = "README.md"
+requires-python = ">=3.10"
 dependencies = [
     "numpy",
     "scipy",
@@ -11,4 +17,8 @@ dependencies = [
     "corner",
     "dynesty",
     "ipykernel",
-    ]
+    "notebook",
+]
+
+[tool.setuptools]
+py-modules = ["RJMCMC"]
