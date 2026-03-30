@@ -201,7 +201,7 @@ The calculated evidence for $M_1$ was $\log{Z_1} = -1188.53 \pm 0.10$ resulting 
 \subsection*{(b) MAP Change Points}
 % Plot the trace plot for the model index 𝑘 to verify that the chain has fully explored the model space. Plot the posterior on the model index 𝑘.
 % What is the preferred maximum a posteriori number of change points?
-The RJMCMC was run for 300,000 iterations. The trace plot in \Cref{fig:5b} shows that the chain explored a wide range of models and mixed well, staying mostly between $k=2$ and $k=5$, occasionally jumping as high as $k=11$. The chain converged rapidly with the running mean stabilising within the first few thousand iterations, so only the first 10\% of samples were discarded as burn-in. The posterior distribution on $k$ peaks at $k=3$ ($P \approx 0.28$), which is the maximum a posteriori estimate, followed by $k=2$ ($P \approx 0.23$) and $k=4$ ($P \approx 0.22$). The posterior is consistent with the Poisson prior, also peaked at $k=3$, but is more concentrated indicating that the data reinforces the prior belief without fully resolving model uncertainty.
+The RJMCMC algorithm of following Green (1995) \cite{green1995} was run for 300,000 iterations. The trace plot in \Cref{fig:5b} shows that the chain explored a wide range of models and mixed well, staying mostly between $k=2$ and $k=5$, occasionally jumping as high as $k=11$. The chain converged rapidly with the running mean stabilising within the first few thousand iterations, so only the first 10\% of samples were discarded as burn-in. The posterior distribution on $k$ peaks at $k=3$ ($P \approx 0.28$), which is the maximum a posteriori estimate, followed by $k=2$ ($P \approx 0.23$) and $k=4$ ($P \approx 0.22$). The posterior is consistent with the Poisson prior, also peaked at $k=3$, but is more concentrated indicating that the data reinforces the prior belief without fully resolving model uncertainty.
 
 \begin{figure}[htbp]
     \centering
@@ -227,5 +227,14 @@ Since RJMCMC samples models in proportion to their posterior, evaluating the dis
 
 \section*{AI Use}
 I have used autogeneration tools to assist with code debugging, LaTeX formatting, helping to generate figures and creating `README.md`. This declaration is made in accordance with the Course Handbook.
+
+\begin{thebibliography}{1}
+
+\bibitem{green1995}
+P. J. Green, 
+“Reversible jump Markov chain Monte Carlo computation and Bayesian model determination,” 
+Biometrika, 82(4), 711-732, 1995.
+
+\end{thebibliography}
 
 \end{document}
